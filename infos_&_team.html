@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FHNW Muttenz</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="datenblatt">
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html">
+                <img src="img/icon/pool.svg" alt="Pool Logo" class="nav-logo">
+            </a>
+        </div>
+
+        <div class="nav-center">
+            <span>FHNW Campus Muttenz</span>
+        </div>
+
+        <div class="nav-right">
+            <a href="projekt.html">Projekt</a>
+            <a href="infos_&_team.html" class="active">Infos & Team</a>
+            <a href="about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="content">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="infos">Infos</button>
+            <button class="tab-btn" data-tab="team">Team & Partner</button>
+        </div>
+
+        <div class="tab-content" id="infos">
+
+            <div class="infos-layout">
+
+                <div class="infos-header">
+                    <h2>0275 – Neubau Fachhochschule</h2>
+                    <p>
+                        Neubau Fachhochschule mit 12 Obergeschossen, 3 Untergeschossen, Forschung, Lehre, Labor,
+                        Verwaltung,
+                        Gastronomie und Sport für 5 Fakultäten mit 4000 Studierenden und 800 Mitarbeitenden.
+                        Flexible Struktur, wirtschaftlicher Betrieb und starke Wechselwirkung zwischen Architektur und
+                        Freiraum.
+                    </p>
+
+                    <p><strong>Adresse:</strong> Hofackerstrasse 30, 4132 Muttenz</p>
+                </div>
+
+                <div class="infos-data">
+                    <h3>Projektdaten</h3>
+                    <p>
+                        Wettbewerb: 2010–2011, 1. Preis<br>
+                        Planung: 2011–2018<br>
+                        Ausführung: 2014–2018
+                    </p>
+
+                    <h3>Gebäudedaten</h3>
+                    <p>
+                        Baukosten BKP 1–9: 300 Mio. CHF<br>
+                        Gebäudevolumen: 355‘000 m³<br>
+                        Geschossfläche: 68‘000 m²<br>
+                        Hauptnutzfläche: 35‘000 m²<br>
+                        Grundfläche: 64,5 × 72 m<br>
+                        Höhe ab Eingangsniveau: 64,5 m<br>
+                        Studierende / Mitarbeitende: 4000 / 800
+                    </p>
+                </div>
+
+                <div class="infos-image">
+                    <img src="img/bild/30.jpg" id="img-infos" alt="FHNW Campus Muttenz">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="tab-content" id="team" style="display:none;">
+            <p><strong>Generalplanung:</strong> pool Architekten, Zürich / Takt Baumanagement AG</p>
+            <p><strong>Generalunternehmung:</strong> HRS Real Estate AG, Frauenfeld</p>
+            <p><strong>Architekt:</strong> pool Architekten, Zürich: David Leuthold, Andreas Sonderegger</p>
+
+            <h3>Spezialisten</h3>
+            <p>Landschaftsarchitektur: Studio Vulkan, Zürich<br>
+                Bauingenieure: Schnetzer Puskas Ingenieure AG<br>
+                HLKS-Ingenieur: Kalt + Halbeisen AG<br>
+                Elektroplanung: Pro Engineering AG<br>
+                Weitere Planungen: Brandschutz, Lichtplanung, Akustik, Laborplanung, Fassadenplanung, Möblierung,
+                Gastroplanung</p>
+
+            <h3>Fotografie & Visualisierungen</h3>
+            <p>Andrea Helbling (Architekturfotografie), Martin Stollenwerk (Bauprozess / Buch), Mark Niedermann, Marcel
+                van der Burg, Lukas Gruntz<br>
+                Visualisierungen: maaars</p>
+
+            <h3>Kunst am Bau</h3>
+            <p>Höhe: 10,3 m | Grundriss: 2,02 × 2,06 m | Gewicht: ca. 100 t | Material: Konglomerat aus Beton und
+                diversen Rohstoffen</p>
+        </div>
+    </main>
+
+    <script>
+        const tabs = document.querySelectorAll(".tab-btn");
+        const contents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                contents.forEach(c => c.style.display = "none");
+                document.getElementById(tab.dataset.tab).style.display = "block";
+            });
+        });
+    </script>
+</body>
+
+</html>
