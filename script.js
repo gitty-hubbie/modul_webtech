@@ -1,122 +1,131 @@
-const images = [];
-for (let i = 1; i <= 32; i++) {
-  images.push({
-    src: `img/bild/${i}.jpg`,
-    type: i <= 21 ? "bilder" : "plaene"
-  });
-}
-
-images.sort(() => Math.random() - 0.5);
-
-const columns = 14;
-const minPerRow = 4;
-let row = 1;
-let placed = 0;
-
-let availableCols = Array.from({ length: columns }, (_, i) => i + 1);
+const images = [
+  { src: "img/bild/1.jpg", col: 1, row: 1, type: "bilder" },
+  { src: "img/bild/2.jpg", col: 3, row: 1, type: "bilder" },
+  { src: "img/bild/3.jpg", col: 5, row: 1, type: "bilder" },
+  { src: "img/bild/4.jpg", col: 2, row: 2, type: "bilder" },
+  { src: "img/bild/5.jpg", col: 6, row: 2, type: "bilder" },
+  { src: "img/bild/6.jpg", col: 1, row: 4, type: "bilder" },
+  { src: "img/bild/7.jpg", col: 4, row: 3, type: "bilder" },
+  { src: "img/bild/8.jpg", col: 7, row: 3, type: "bilder" },
+  { src: "img/bild/9.jpg", col: 9, row: 2, type: "bilder" },
+  { src: "img/bild/10.jpg", col: 5, row: 4, type: "bilder" },
+  { src: "img/bild/11.jpg", col: 2, row: 3, type: "bilder" },
+  { src: "img/bild/12.jpg", col: 8, row: 4, type: "bilder" },
+  { src: "img/bild/13.jpg", col: 3, row: 5, type: "bilder" },
+  { src: "img/bild/14.jpg", col: 6, row: 5, type: "bilder" },
+  { src: "img/bild/15.jpg", col: 4, row: 6, type: "plaene" },
+  { src: "img/bild/16.jpg", col: 7, row: 6, type: "plaene" },
+  { src: "img/bild/17.jpg", col: 2, row: 6, type: "plaene" },
+  { src: "img/bild/18.jpg", col: 9, row: 6, type: "plaene" },
+  { src: "img/bild/19.jpg", col: 8, row: 1, type: "plaene" },
+  { src: "img/bild/20.jpg", col: 1, row: 2, type: "plaene" },
+  { src: "img/bild/21.jpg", col: 4, row: 2, type: "plaene" },
+  { src: "img/bild/22.jpg", col: 1, row: 6, type: "plaene" },
+  { src: "img/bild/23.jpg", col: 4, row: 2, type: "plaene" },
+  { src: "img/bild/24.jpg", col: 8, row: 1, type: "plaene" },
+  { src: "img/bild/25.jpg", col: 3, row: 4, type: "plaene" },
+  { src: "img/bild/26.jpg", col: 10, row: 4, type: "plaene" },
+  { src: "img/bild/27.jpg", col: 5, row: 6, type: "plaene" },
+  { src: "img/bild/28.jpg", col: 7, row: 5, type: "plaene" },
+  { src: "img/bild/29.jpg", col: 5, row: 3, type: "plaene" },
+  { src: "img/bild/30.jpg", col: 1, row: 2, type: "plaene" },
+  { src: "img/bild/31.jpg", col: 6, row: 1, type: "plaene" },
+  { src: "img/bild/32.jpg", col: 9, row: 3, type: "plaene" }
+];
 
 images.forEach(data => {
+
   const img = document.createElement("img");
   img.src = data.src;
-
-  // Kategorie speichern
   img.dataset.type = data.type;
 
+  const number = data.src.match(/\d+/)[0];
+
   img.addEventListener("click", () => {
-    const number = data.src.match(/\d+/)[0];
     window.location.href = `projekt.html?img=${number}`;
   });
 
-  if (availableCols.length === 0) {
-    row++;
-    placed = 0;
-    availableCols = Array.from({ length: columns }, (_, i) => i + 1);
-  }
-
-  const colIndex = Math.floor(Math.random() * availableCols.length);
-  const col = availableCols[colIndex];
-  availableCols.splice(colIndex, 1);
-
-  img.style.gridColumn = col;
-  img.style.gridRow = row;
+  img.style.gridColumn = data.col;
+  img.style.gridRow = data.row;
 
   canvas.appendChild(img);
-  placed++;
 
-  if (placed >= minPerRow && Math.random() > 0.5) {
-    row++;
-    placed = 0;
-    availableCols = Array.from({ length: columns }, (_, i) => i + 1);
-  }
 });
+
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+let velocityX = 0;
+let velocityY = 0;
 
 let mouseX = 0;
 let mouseY = 0;
-const maxSpeed = 15; // maximale Geschwindigkeit in Pixel pro Frame
+
+const friction = 0.99;
+const strength = 0.05;
+const maxSpeed = 8;
+
+const edgeThreshold = 0.15; // 15% vom Rand
+const edgeBoost = 0.3;      // wie stark der Rand schiebt
 
 document.addEventListener("mousemove", (e) => {
+  const dx = e.clientX - lastMouseX;
+  const dy = e.clientY - lastMouseY;
+
+  lastMouseX = e.clientX;
+  lastMouseY = e.clientY;
+
   mouseX = e.clientX;
   mouseY = e.clientY;
+
+  velocityX += dx * strength;
+  velocityY += dy * strength;
 });
 
 function autoScroll() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // relative Positionen (0 = links/oben, 1 = rechts/unten)
   const relX = mouseX / vw;
   const relY = mouseY / vh;
 
-  // Scroll-Werte (-maxSpeed .. maxSpeed)
-  const dx = (relX - 0.5) * 2 * maxSpeed; // links negativ, rechts positiv
-  const dy = (relY - 0.5) * 2 * maxSpeed; // oben negativ, unten positiv
+  // 🔹 EDGE BOOST (wenn Maus nahe am Rand)
+  let boostX = 0;
+  let boostY = 0;
 
-  window.scrollBy(dx, dy);
+  if (relX < edgeThreshold) {
+    boostX = -(edgeThreshold - relX) * edgeBoost * maxSpeed;
+  } else if (relX > 1 - edgeThreshold) {
+    boostX = (relX - (1 - edgeThreshold)) * edgeBoost * maxSpeed;
+  }
+
+  if (relY < edgeThreshold) {
+    boostY = -(edgeThreshold - relY) * edgeBoost * maxSpeed;
+  } else if (relY > 1 - edgeThreshold) {
+    boostY = (relY - (1 - edgeThreshold)) * edgeBoost * maxSpeed;
+  }
+
+  velocityX += boostX;
+  velocityY += boostY;
+
+  // begrenzen
+  velocityX = Math.max(-maxSpeed, Math.min(maxSpeed, velocityX));
+  velocityY = Math.max(-maxSpeed, Math.min(maxSpeed, velocityY));
+
+  // Reibung
+  velocityX *= friction;
+  velocityY *= friction;
+
+  // Stop-Schwelle
+  if (Math.abs(velocityX) < 0.01) velocityX = 0;
+  if (Math.abs(velocityY) < 0.01) velocityY = 0;
+
+  window.scrollBy(velocityX, velocityY);
 
   requestAnimationFrame(autoScroll);
 }
 
-// Start auto-scroll Loop
 requestAnimationFrame(autoScroll);
-
-const image = document.querySelectorAll(".canvas img");
-
-document.addEventListener("mousemove", (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
-
-function updateZoom() {
-  image.forEach(img => {
-    const rect = img.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const dx = mouseX - centerX;
-    const dy = mouseY - centerY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    const maxDistance = 300; // max Radius für Zoom-Effekt
-    const maxScale = 1.5;    // maximale Vergrößerung
-
-    let scale = 1;
-    if (distance < maxDistance) {
-      scale = 1 + (1 - distance / maxDistance) * (maxScale - 1);
-    }
-
-    // sanfte Interpolation für flüssige Animation
-    const current = parseFloat(img.dataset.scale) || 1;
-    const smoothScale = current + (scale - current) * 0.2; // Dämpfung
-    img.style.transform = `scale(${smoothScale})`;
-    img.dataset.scale = smoothScale;
-
-    img.style.zIndex = smoothScale > 1.05 ? 10 : 1;
-  });
-
-  requestAnimationFrame(updateZoom);
-}
-
-requestAnimationFrame(updateZoom);
 
 const buttons = document.querySelectorAll(".switch button");
 const imgs = document.querySelectorAll(".canvas img");
