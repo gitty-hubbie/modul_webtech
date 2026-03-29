@@ -25,9 +25,17 @@
             FHNW Campus Muttenz
         </div>
         <div class="nav-right">
-            <a href="projekt.html" class="active">Projekt</a>
-            <a href="infos_&_team.html">Infos & Team</a>
-            <a href="about.html">About</a>
+            <div class="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="nav-links">
+                <a href="projekt.html">Projekt</a>
+                <a href="infos_&_team.html">Infos & Team</a>
+                <a href="about.html">About</a>
+            </div>
         </div>
     </nav>
 
@@ -262,61 +270,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
-    <script>
-        const swiper = new Swiper(".mySwiper", {
-            direction: "vertical",
-            slidesPerView: "auto",
-            spaceBetween: -40,
-            centeredSlides: true,
-            freeMode: false,
-            speed: 900,
-            mousewheel: {
-                sensitivity: 0.01,
-                releaseOnEdges: true
-            }
-        });
-
-        document.querySelectorAll(".image-card").forEach(card => {
-
-            const main = card.querySelector(".main-img");
-            const detail = card.querySelector(".detail-img");
-
-            // Wenn kein Detailbild existiert → nichts machen
-            if (!detail) return;
-
-            function swap() {
-                const temp = main.src;
-                main.src = detail.src;
-                detail.src = temp;
-            }
-
-            main.addEventListener("click", swap);
-            detail.addEventListener("click", swap);
-        });
-
-        const params = new URLSearchParams(window.location.search);
-        const imgNumber = params.get("img");
-
-        if (imgNumber) {
-
-            const slides = document.querySelectorAll(".swiper-slide");
-
-            slides.forEach((slide, index) => {
-
-                const main = slide.querySelector(".main-img");
-                const detail = slide.querySelector(".detail-img");
-
-                const mainFile = main ? main.src.split("/").pop() : "";
-                const detailFile = detail ? detail.src.split("/").pop() : "";
-
-                if (mainFile === `${imgNumber}.jpg` || detailFile === `${imgNumber}.jpg`) {
-                    swiper.slideTo(index, 0);
-                }
-
-            });
-
-        }
-    </script>
+    <script src="script.js"></script>
 
 </body>
 

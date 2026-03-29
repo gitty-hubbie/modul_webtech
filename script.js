@@ -33,126 +33,216 @@ const images = [
   { src: "img/bild/32.jpg", col: 9, row: 3, type: "plaene" }
 ];
 
-images.forEach(data => {
+const canvas = document.getElementById("canvas");
 
-  const img = document.createElement("img");
-  img.src = data.src;
-  img.dataset.type = data.type;
+if (canvas) {
 
-  const number = data.src.match(/\d+/)[0];
+  images.forEach(data => {
+    const img = document.createElement("img");
+    img.src = data.src;
+    img.dataset.type = data.type;
 
-  img.addEventListener("click", () => {
-    window.location.href = `projekt.html?img=${number}`;
+    const number = data.src.match(/\d+/)[0];
+
+    img.addEventListener("click", () => {
+      window.location.href = `projekt.html?img=${number}`;
+    });
+
+    img.style.gridColumn = data.col;
+    img.style.gridRow = data.row;
+
+    canvas.appendChild(img);
   });
 
-  img.style.gridColumn = data.col;
-  img.style.gridRow = data.row;
+  // === Scroll ===
+  let lastMouseX = 0;
+  let lastMouseY = 0;
 
-  canvas.appendChild(img);
+  let velocityX = 0;
+  let velocityY = 0;
 
-});
+  let posX = 0;
+  let posY = 0;
 
-let lastMouseX = 0;
-let lastMouseY = 0;
+  const friction = 0.99;
+  const strength = 0.05;
+  const maxSpeed = 8;
+  const edgeThreshold = 0.15;
+  const edgeBoost = 0.3;
 
-let velocityX = 0;
-let velocityY = 0;
+  document.addEventListener("mousemove", (e) => {
+    const dx = e.clientX - lastMouseX;
+    const dy = e.clientY - lastMouseY;
 
-let mouseX = 0;
-let mouseY = 0;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
 
-const friction = 0.99;
-const strength = 0.05;
-const maxSpeed = 8;
+    velocityX += dx * strength;
+    velocityY += dy * strength;
+  });
 
-const edgeThreshold = 0.15; // 15% vom Rand
-const edgeBoost = 0.3;      // wie stark der Rand schiebt
+  function autoScroll() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-document.addEventListener("mousemove", (e) => {
-  const dx = e.clientX - lastMouseX;
-  const dy = e.clientY - lastMouseY;
+    const relX = lastMouseX / vw;
+    const relY = lastMouseY / vh;
 
-  lastMouseX = e.clientX;
-  lastMouseY = e.clientY;
+    if(relX < edgeThreshold) velocityX -= edgeBoost * maxSpeed;
+    if(relX > 1 - edgeThreshold) velocityX += edgeBoost * maxSpeed;
+    if(relY < edgeThreshold) velocityY -= edgeBoost * maxSpeed;
+    if(relY > 1 - edgeThreshold) velocityY += edgeBoost * maxSpeed;
 
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+    velocityX = Math.max(-maxSpeed, Math.min(maxSpeed, velocityX));
+    velocityY = Math.max(-maxSpeed, Math.min(maxSpeed, velocityY));
 
-  velocityX += dx * strength;
-  velocityY += dy * strength;
-});
+    posX += velocityX;
+    posY += velocityY;
 
-function autoScroll() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+    const maxX = canvas.offsetWidth - vw;
+    const maxY = canvas.offsetHeight - vh;
 
-  const relX = mouseX / vw;
-  const relY = mouseY / vh;
+    posX = Math.max(0, Math.min(maxX, posX));
+    posY = Math.max(0, Math.min(maxY, posY));
 
-  // 🔹 EDGE BOOST (wenn Maus nahe am Rand)
-  let boostX = 0;
-  let boostY = 0;
+    canvas.style.transform = `translate(${-posX}px, ${-posY}px)`;
 
-  if (relX < edgeThreshold) {
-    boostX = -(edgeThreshold - relX) * edgeBoost * maxSpeed;
-  } else if (relX > 1 - edgeThreshold) {
-    boostX = (relX - (1 - edgeThreshold)) * edgeBoost * maxSpeed;
+    velocityX *= friction;
+    velocityY *= friction;
+
+    requestAnimationFrame(autoScroll);
   }
-
-  if (relY < edgeThreshold) {
-    boostY = -(edgeThreshold - relY) * edgeBoost * maxSpeed;
-  } else if (relY > 1 - edgeThreshold) {
-    boostY = (relY - (1 - edgeThreshold)) * edgeBoost * maxSpeed;
-  }
-
-  velocityX += boostX;
-  velocityY += boostY;
-
-  // begrenzen
-  velocityX = Math.max(-maxSpeed, Math.min(maxSpeed, velocityX));
-  velocityY = Math.max(-maxSpeed, Math.min(maxSpeed, velocityY));
-
-  // Reibung
-  velocityX *= friction;
-  velocityY *= friction;
-
-  // Stop-Schwelle
-  if (Math.abs(velocityX) < 0.01) velocityX = 0;
-  if (Math.abs(velocityY) < 0.01) velocityY = 0;
-
-  window.scrollBy(velocityX, velocityY);
 
   requestAnimationFrame(autoScroll);
+
 }
 
-requestAnimationFrame(autoScroll);
+window.addEventListener("wheel", e => e.preventDefault(), {passive:false});
+window.addEventListener("keydown", e => {
+  const keys = ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"];
+  if(keys.includes(e.code)) e.preventDefault();
+});
 
 const buttons = document.querySelectorAll(".switch button");
-const imgs = document.querySelectorAll(".canvas img");
 
-buttons.forEach(btn => {
-  btn.addEventListener("click", () => {
+if (buttons.length > 0) {
+  const imgs = document.querySelectorAll(".canvas img");
 
-    buttons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
 
-    const filter = btn.dataset.filter;
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
 
-    imgs.forEach(img => {
+      const filter = btn.dataset.filter;
 
-      if (filter === "alle") {
-        img.style.display = "block";
-      }
+      imgs.forEach(img => {
+        if (filter === "alle" || img.dataset.type === filter) {
+          img.style.display = "block";
+        } else {
+          img.style.display = "none";
+        }
+      });
 
-      else if (img.dataset.type === filter) {
-        img.style.display = "block";
-      }
+    });
+  });
+}
 
-      else {
-        img.style.display = "none";
+const burger = document.querySelector(".burger");
+const navLinks = document.querySelector(".nav-links");
+
+if (burger && navLinks) {
+  burger.addEventListener("click", () => {
+    burger.classList.toggle("open");
+    navLinks.classList.toggle("open");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const tabs = document.querySelectorAll(".tab-btn");
+
+  if (tabs.length === 0) return;
+
+  const contents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+
+      contents.forEach(c => c.style.display = "none");
+
+      const target = document.getElementById(tab.dataset.tab);
+      if (target) target.style.display = "block";
+
+    });
+  });
+
+});
+
+function initSwiperPage() {
+
+  const swiperEl = document.querySelector(".mySwiper");
+
+  if (!swiperEl || typeof Swiper === "undefined") return;
+
+  const swiper = new Swiper(".mySwiper", {
+    direction: "vertical",
+    slidesPerView: "auto",
+    spaceBetween: -40,
+    centeredSlides: true,
+    freeMode: false,
+    speed: 900,
+    mousewheel: {
+      sensitivity: 0.01,
+      releaseOnEdges: true
+    }
+  });
+
+  document.querySelectorAll(".image-card").forEach(card => {
+
+    const main = card.querySelector(".main-img");
+    const detail = card.querySelector(".detail-img");
+
+    if (!main || !detail) return;
+
+    function swap() {
+      const temp = main.src;
+      main.src = detail.src;
+      detail.src = temp;
+    }
+
+    main.addEventListener("click", swap);
+    detail.addEventListener("click", swap);
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  const imgNumber = params.get("img");
+
+  if (imgNumber) {
+
+    const slides = document.querySelectorAll(".swiper-slide");
+
+    slides.forEach((slide, index) => {
+
+      const main = slide.querySelector(".main-img");
+      const detail = slide.querySelector(".detail-img");
+
+      const mainFile = main ? main.src.split("/").pop() : "";
+      const detailFile = detail ? detail.src.split("/").pop() : "";
+
+      if (mainFile === `${imgNumber}.jpg` || detailFile === `${imgNumber}.jpg`) {
+        swiper.slideTo(index, 0);
       }
 
     });
+  }
+}
 
-  });
+document.addEventListener("DOMContentLoaded", () => {
+
+  initSwiperPage();
+
 });

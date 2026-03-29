@@ -11,6 +11,7 @@
 </head>
 
 <body class="home">
+    <div class="viewport">
     <nav class="navbar">
         <div class="nav-left">
             <a href="#">
@@ -23,11 +24,20 @@
         </div>
 
         <div class="nav-right">
-            <a href="projekt.html">Projekt</a>
-            <a href="infos_&_team.html">Infos & Team</a>
-            <a href="about.html">About</a>
+            <div class="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="nav-links">
+                <a href="projekt.html">Projekt</a>
+                <a href="infos_&_team.html">Infos & Team</a>
+                <a href="about.html">About</a>
+            </div>
         </div>
     </nav>
+
 
     <div class="canvas" id="canvas"></div>
 
@@ -36,7 +46,7 @@
         <button data-filter="bilder">Bilder</button>
         <button data-filter="plaene">Pläne</button>
     </div>
-
+    </div>
     <script src="script.js"></script>
 </body>
 
