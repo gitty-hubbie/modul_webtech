@@ -82,7 +82,7 @@ if (canvas) {
   });
 
   function autoScroll() {
-    const vw = window.innerWidth;
+    const vw = document.documentElement.clientWidth;
     const vh = window.innerHeight;
 
     const relX = lastMouseX / vw;
@@ -182,25 +182,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+let swiperInstance;
+
 function initSwiperPage() {
 
   const swiperEl = document.querySelector(".mySwiper");
-
   if (!swiperEl || typeof Swiper === "undefined") return;
 
-  const swiper = new Swiper(".mySwiper", {
+  swiperInstance = new Swiper(".mySwiper", {
+
     direction: "vertical",
+
     slidesPerView: "auto",
-    spaceBetween: -40,
     centeredSlides: true,
-    freeMode: false,
     speed: 900,
+    grabCursor: true,
+
+    spaceBetween: -40,
+
     mousewheel: {
-      sensitivity: 0.01,
+      sensitivity: 0.5,
       releaseOnEdges: true
+    },
+    breakpoints: {
+      0: {
+        direction: "horizontal",
+        spaceBetween: 20,
+        mousewheel: false
+      },
+      900: {
+        direction: "vertical",
+        spaceBetween: -40,
+        mousewheel: {
+          sensitivity: 0.5,
+          releaseOnEdges: true
+        }
+      }
     }
+
   });
 
+  setupExtras();
+}
+
+function setupExtras() {
   document.querySelectorAll(".image-card").forEach(card => {
 
     const main = card.querySelector(".main-img");
@@ -233,8 +258,11 @@ function initSwiperPage() {
       const mainFile = main ? main.src.split("/").pop() : "";
       const detailFile = detail ? detail.src.split("/").pop() : "";
 
-      if (mainFile === `${imgNumber}.jpg` || detailFile === `${imgNumber}.jpg`) {
-        swiper.slideTo(index, 0);
+      if (
+        mainFile === `${imgNumber}.jpg` ||
+        detailFile === `${imgNumber}.jpg`
+      ) {
+        swiperInstance.slideTo(index, 0);
       }
 
     });
@@ -242,7 +270,5 @@ function initSwiperPage() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
   initSwiperPage();
-
 });
