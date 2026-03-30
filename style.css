@@ -54,7 +54,6 @@ body.home {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-auto-rows: 1fr;
-  will-change: transform;
 
   gap: 60px;
   padding: 100px;
@@ -250,31 +249,32 @@ main.content {
   border-radius: 3px;
 }
 
+body.projekt {
+  overflow-y: hidden;
+}
+
 @media (max-width: 900px), (max-device-width: 900px) {
-  .project-page {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 90px 20px 20px;
-  }
-
-  .project-info {
-    max-width: 100%;
-  }
-
-  .swiper {
+  .swiper.mySwiper {
     height: auto;
+    order: -1;
+  }
+
+  body.projekt {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+  main.content {
+    height: auto; 
+  }
+
+  .swiper-wrapper {
+    align-items: flex-start; /* Slides oben ausrichten */
   }
 
   .swiper-slide {
-    width: 80%;
+    height: auto; /* Slide-Höhe passt sich Inhalt an */
   }
-
-  .detail-img {
-    right: 10px;
-    bottom: 10px;
-    width: 90px;
-  }
-  
   .burger {
     display: flex;
   }
@@ -410,10 +410,6 @@ a:hover {
 .project-info h2 {
   margin-bottom: 20px;
   font-family: "Source Sans 3";
-}
-
-body.projekt {
-  overflow-y: hidden;
 }
 
 .swiper.mySwiper {

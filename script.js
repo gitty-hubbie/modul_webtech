@@ -88,10 +88,10 @@ if (canvas) {
     const relX = lastMouseX / vw;
     const relY = lastMouseY / vh;
 
-    if(relX < edgeThreshold) velocityX -= edgeBoost * maxSpeed;
-    if(relX > 1 - edgeThreshold) velocityX += edgeBoost * maxSpeed;
-    if(relY < edgeThreshold) velocityY -= edgeBoost * maxSpeed;
-    if(relY > 1 - edgeThreshold) velocityY += edgeBoost * maxSpeed;
+    if (relX < edgeThreshold) velocityX -= edgeBoost * maxSpeed;
+    if (relX > 1 - edgeThreshold) velocityX += edgeBoost * maxSpeed;
+    if (relY < edgeThreshold) velocityY -= edgeBoost * maxSpeed;
+    if (relY > 1 - edgeThreshold) velocityY += edgeBoost * maxSpeed;
 
     velocityX = Math.max(-maxSpeed, Math.min(maxSpeed, velocityX));
     velocityY = Math.max(-maxSpeed, Math.min(maxSpeed, velocityY));
@@ -117,10 +117,10 @@ if (canvas) {
 
 }
 
-window.addEventListener("wheel", e => e.preventDefault(), {passive:false});
+window.addEventListener("wheel", e => e.preventDefault(), { passive: false });
 window.addEventListener("keydown", e => {
-  const keys = ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"];
-  if(keys.includes(e.code)) e.preventDefault();
+  const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"];
+  if (keys.includes(e.code)) e.preventDefault();
 });
 
 const buttons = document.querySelectorAll(".switch button");
@@ -181,56 +181,39 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
 let swiperInstance;
+const mediaQuery = window.matchMedia("(max-width: 899px)");
 
 function initSwiperPage() {
-
   const swiperEl = document.querySelector(".mySwiper");
   if (!swiperEl || typeof Swiper === "undefined") return;
 
+  const isMobile = mediaQuery.matches;
+
   swiperInstance = new Swiper(".mySwiper", {
-
-    direction: "vertical",
-
+    direction: isMobile ? "horizontal" : "vertical",
     slidesPerView: "auto",
     centeredSlides: true,
     speed: 900,
+    spaceBetween: isMobile ? 20 : -40,
+    mousewheel: isMobile ? false : { sensitivity: 0.5, releaseOnEdges: true },
     grabCursor: true,
-
-    spaceBetween: -40,
-
-    mousewheel: {
-      sensitivity: 0.5,
-      releaseOnEdges: true
-    },
-    breakpoints: {
-      0: {
-        direction: "horizontal",
-        spaceBetween: 20,
-        mousewheel: false
-      },
-      900: {
-        direction: "vertical",
-        spaceBetween: -40,
-        mousewheel: {
-          sensitivity: 0.5,
-          releaseOnEdges: true
-        }
-      }
-    }
-
+    
+    // wichtig für Mobile Scroll
+    touchStartPreventDefault: false,
+    touchMoveStopPropagation: false,
+    simulateTouch: true,
+    touchAngle: 45
   });
 
   setupExtras();
 }
 
 function setupExtras() {
+  // 🔹 Image Swap
   document.querySelectorAll(".image-card").forEach(card => {
-
     const main = card.querySelector(".main-img");
     const detail = card.querySelector(".detail-img");
-
     if (!main || !detail) return;
 
     function swap() {
@@ -243,31 +226,32 @@ function setupExtras() {
     detail.addEventListener("click", swap);
   });
 
+  // 🔹 URL Jump
   const params = new URLSearchParams(window.location.search);
   const imgNumber = params.get("img");
-
   if (imgNumber) {
-
     const slides = document.querySelectorAll(".swiper-slide");
-
     slides.forEach((slide, index) => {
-
       const main = slide.querySelector(".main-img");
       const detail = slide.querySelector(".detail-img");
-
       const mainFile = main ? main.src.split("/").pop() : "";
       const detailFile = detail ? detail.src.split("/").pop() : "";
-
-      if (
-        mainFile === `${imgNumber}.jpg` ||
-        detailFile === `${imgNumber}.jpg`
-      ) {
+      if (mainFile === `${imgNumber}.jpg` || detailFile === `${imgNumber}.jpg`) {
         swiperInstance.slideTo(index, 0);
       }
-
     });
   }
 }
+
+// 🔹 MediaQuery Listener
+mediaQuery.addEventListener("change", (e) => {
+  if (!swiperInstance) return;
+  const isMobile = e.matches;
+  swiperInstance.changeDirection(isMobile ? "horizontal" : "vertical");
+  swiperInstance.params.spaceBetween = isMobile ? 20 : -40;
+  swiperInstance.params.mousewheel = isMobile ? false : { sensitivity: 0.5, releaseOnEdges: true };
+  swiperInstance.update();
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   initSwiperPage();
