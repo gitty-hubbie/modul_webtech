@@ -44,10 +44,6 @@ body.home {
   transition: all 0.3s ease;
 }
 
-.content {
-  max-width: 1100px;
-}
-
 .home .canvas {
   width: 4000px;
   position: absolute;
@@ -148,6 +144,7 @@ img {
   height: 36px;
   width: auto;
   display: block;
+  background: transparent;
 }
 
 .nav-center {
@@ -174,11 +171,24 @@ img {
   opacity: 0.6;
 }
 
+.content.infos,
+.content.about,
+.content.impressum {
+  max-width: 1100px;
+}
+
+.content.project-page {
+  max-width: 1200px;
+}
+
 main.content {
   display: flex;
-  gap: 40px;
   padding: 40px;
+}
+
+main.content.project-page {
   height: calc(100vh - 70px);
+  gap: 140px;
 }
 
 /* linke Spalte: Tabs / Kategorien */
@@ -219,7 +229,6 @@ main.content {
   flex: 1;
   padding-left: 20px;
   overflow-y: visible;
-  max-height: calc(100vh - 80px);
 }
 
 .tab-content h2 {
@@ -249,39 +258,86 @@ main.content {
   border-radius: 3px;
 }
 
+.site-footer {
+  margin-top: 100px;
+  padding: 40px;
+  background: #dbebfd;
+  border-top: #b7c7db;
+}
+
+/*#eaf4ff;*/
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: start;
+}
+
+.footer-contact p {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.footer-contact a,
+.footer-right a {
+  color: #555;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-contact a:hover,
+.footer-right a:hover {
+  opacity: 0.6;
+}
+
 body.projekt {
   overflow-y: hidden;
 }
 
-@media (max-width: 900px), (max-device-width: 900px) {
+@media (max-width: 900px),
+(max-device-width: 900px) {
   .swiper.mySwiper {
     height: auto;
     order: -1;
   }
 
   body.projekt {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
-  main.content {
-    height: auto; 
+  main.content.project-page {
+    height: auto;
+  }
+
+main.content   {
+    height: auto;
+    flex-direction: column;
+    padding: 20px;
   }
 
   .swiper-wrapper {
-    align-items: flex-start; /* Slides oben ausrichten */
+    align-items: flex-start;
+    /* Slides oben ausrichten */
   }
 
   .swiper-slide {
-    height: auto; /* Slide-Höhe passt sich Inhalt an */
+    height: auto;
+    /* Slide-Höhe passt sich Inhalt an */
   }
+
   .burger {
     display: flex;
   }
 
- .infos-layout {
-    grid-template-columns: 1fr 350px !important;
-}
+  .infos-layout {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+  }
 
   /* Titel kleiner */
   .nav-center {
@@ -289,10 +345,10 @@ body.projekt {
   }
 
   .nav-right {
-  display: flex;
-  justify-content: flex-end;
-  gap: 24px;
-}
+    display: flex;
+    justify-content: flex-end;
+    gap: 24px;
+  }
 
   /* Links werden Dropdown */
   .nav-links {
@@ -302,7 +358,7 @@ body.projekt {
     width: 220px;
 
     background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
     display: flex;
     flex-direction: column;
@@ -320,11 +376,6 @@ body.projekt {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
-  }
-  
-  main.content {
-    flex-direction: column;
-    padding: 20px;
   }
 
   .tabs {
@@ -345,7 +396,8 @@ body.projekt {
     border-left: none;
     border-bottom: 3px solid #000;
   }
-    .infos-layout {
+
+  .infos-layout {
     grid-template-columns: 1fr;
   }
 
@@ -355,10 +407,16 @@ body.projekt {
 }
 
 .infos-layout {
-  display: grid;
-  grid-template-columns: 1fr 450px;
+  display: block;
 }
 
+
+@media (min-width: 900px) {
+  .infos-layout {
+    display: grid;
+    grid-template-columns: 1fr 450px;
+  }
+}
 .infos-header {
   grid-column: 1 / -1;
   /* überspannt beide Spalten */
