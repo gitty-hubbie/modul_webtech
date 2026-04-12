@@ -21,6 +21,7 @@ body.home {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  height: 100vh;
 }
 
 * {
@@ -44,15 +45,44 @@ body.home {
   transition: all 0.3s ease;
 }
 
-.home .canvas {
-  width: 4000px;
+.zoom-wrapper {
+  width: 3800px;
+  height: 2600px;
   position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -1300px;
+  margin-left: -1900px;
+  transform: scale(0.25);
+  transform-origin: center center;
+  transition: transform 2.5s cubic-bezier(0.82, 1, 0.36, 1);
+}
+
+body.loaded .zoom-wrapper {
+  transform: scale(1);
+}
+
+.scroll-container {
+  width: 3800px;
+  height: 2200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.home .canvas {
+  width: 3800px;
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  grid-auto-rows: 1fr;
-
-  gap: 60px;
-  padding: 100px;
+  grid-auto-rows: 310px;
+  gap: 55px;
+  padding: 180px 20px 220px 180px;
+  align-content: start;
 }
 
 .viewport {
@@ -70,39 +100,13 @@ body.home {
   cursor: pointer;
 }
 
+.image-card:has(.detail-img) .main-img {
+  cursor: pointer;
+}
+
 .canvas img:hover {
   filter: brightness(0.8);
   transform: scale(1.03);
-}
-
-.switch {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  display: flex;
-  gap: 20px;
-
-  background: white;
-  padding: 10px 20px;
-  border-radius: 30px;
-
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 2000;
-}
-
-.switch button {
-  border: none;
-  background: none;
-  font-size: 16px;
-  cursor: pointer;
-  opacity: 0.6;
-}
-
-.switch button.active {
-  opacity: 1;
-  font-weight: 600;
 }
 
 img {
@@ -187,7 +191,7 @@ main.content {
 }
 
 main.content.project-page {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 40px);
   gap: 140px;
 }
 
@@ -248,7 +252,6 @@ main.content.project-page {
   line-height: 1.6;
 }
 
-/* Scrollbar dezent */
 .tab-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -259,13 +262,20 @@ main.content.project-page {
 }
 
 .site-footer {
-  margin-top: 100px;
   padding: 40px;
   background: #dbebfd;
   border-top: #b7c7db;
 }
 
-/*#eaf4ff;*/
+.about .site-footer,
+.infos .site-footer {
+  margin-top: 40px;
+}
+
+.impressum .site-footer {
+  margin-top: 80px;
+}
+
 .footer-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -293,8 +303,9 @@ main.content.project-page {
   opacity: 0.6;
 }
 
-body.projekt {
-  overflow-y: hidden;
+.projekt main {
+  height: 100vh;
+  overflow: hidden;
 }
 
 @media (max-width: 900px),
@@ -311,9 +322,10 @@ body.projekt {
 
   main.content.project-page {
     height: auto;
+    gap: 40px;
   }
 
-main.content   {
+  main.content {
     height: auto;
     flex-direction: column;
     padding: 20px;
@@ -417,6 +429,7 @@ main.content   {
     grid-template-columns: 1fr 450px;
   }
 }
+
 .infos-header {
   grid-column: 1 / -1;
   /* überspannt beide Spalten */
@@ -462,7 +475,6 @@ a:hover {
   flex: 1;
   max-width: 500px;
   overflow: hidden;
-  /* Infoblock scrollt nicht */
 }
 
 .project-info h2 {
@@ -528,6 +540,11 @@ a:hover {
   background: linear-gradient(to top,
       rgba(0, 0, 0, 0.72),
       rgba(0, 0, 0, 0));
+}
+
+.image-card.detail-active .caption {
+  color: black;
+  background: none;
 }
 
 .detail-img {
