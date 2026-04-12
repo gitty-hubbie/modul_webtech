@@ -168,12 +168,20 @@ if (isMobile) {
   let startY = 0;
   let startPosX = 0;
   let startPosY = 0;
+  let lastTouchX = 0;
+  let lastTouchY = 0;
 
   scrollContainer.addEventListener("touchstart", (e) => {
     isDragging = true;
 
+    velocityX = 0;
+    velocityY = 0;
+
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
+
+    lastTouchX = startX;
+    lastTouchY = startY;
 
     startPosX = posX;
     startPosY = posY;
@@ -184,8 +192,17 @@ if (isMobile) {
 
     e.preventDefault();
 
-    const dx = e.touches[0].clientX - startX;
-    const dy = e.touches[0].clientY - startY;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+
+    const dx = currentX - startX;
+    const dy = currentY - startY;
+
+    velocityX = currentX - lastTouchX;
+    velocityY = currentY - lastTouchY;
+
+    lastTouchX = currentX;
+    lastTouchY = currentY;
 
     posX = startPosX - dx;
     posY = startPosY - dy;
@@ -201,9 +218,6 @@ if (isMobile) {
   scrollContainer.addEventListener("touchend", () => {
     isDragging = false;
 
-    velocityX = (startPosX - posX) * 0.1;
-    velocityY = (startPosY - posY) * 0.1;
-
     requestAnimationFrame(inertiaScroll);
   });
 
@@ -211,8 +225,8 @@ if (isMobile) {
     velocityX *= 0.95;
     velocityY *= 0.95;
 
-    posX += velocityX;
-    posY += velocityY;
+    posX -= velocityX;
+    posY -= velocityY;
 
     const maxX = 3800 - window.innerWidth;
     const maxY = 2200 - window.innerHeight;
