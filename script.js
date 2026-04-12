@@ -38,6 +38,8 @@ const images = [
 
 const canvas = document.getElementById("canvas");
 const scrollContainer = document.getElementById("scrollContainer");
+const isMobile = window.matchMedia("(max-width: 900px)").matches;
+
 
 let posX = 0;
 let posY = 0;
@@ -55,7 +57,6 @@ if (canvas) {
     scrollContainer.style.transform = `translate(calc(-50% + ${-(posX - offsetX)}px), calc(-50% + ${-(posY - offsetY)}px))`;
   }
 
-  // === Bilder hinzufügen ===
   images.forEach(data => {
     const img = document.createElement("img");
     img.src = data.src;
@@ -123,8 +124,6 @@ if (canvas) {
     requestAnimationFrame(autoScroll);
   }
 
-  // ← kein requestAnimationFrame und kein mousemove hier mehr
-
   window.addEventListener("load", () => {
     posX = (3800 - window.innerWidth) / 2;
     posY = (2200 - window.innerHeight) / 2 - 200;
@@ -133,28 +132,100 @@ if (canvas) {
     setTimeout(() => {
       document.body.classList.add("loaded");
 
-      // Erst nach der Zoom-Animation starten
       setTimeout(() => {
-        document.addEventListener("mousemove", e => {
-          const dx = e.clientX - (window.lastMouseX || e.clientX);
-          const dy = e.clientY - (window.lastMouseY || e.clientY);
-          window.lastMouseX = e.clientX;
-          window.lastMouseY = e.clientY;
-          velocityX += dx * 0.05;
-          velocityY += dy * 0.05;
-        });
+        if (!isMobile) {
+          document.addEventListener("mousemove", e => {
+            const dx = e.clientX - (window.lastMouseX || e.clientX);
+            const dy = e.clientY - (window.lastMouseY || e.clientY);
+            window.lastMouseX = e.clientX;
+            window.lastMouseY = e.clientY;
+            velocityX += dx * 0.05;
+            velocityY += dy * 0.05;
+          });
+        }
 
-        requestAnimationFrame(autoScroll);
+        if (!isMobile) {
+          requestAnimationFrame(autoScroll);
+        }
       }, 2500);
 
     }, 400);
   });
 
-  window.addEventListener("wheel", e => e.preventDefault(), { passive: false });
+  if (!isMobile) {
+    window.addEventListener("wheel", e => e.preventDefault(), { passive: false });
+  }
   window.addEventListener("keydown", e => {
     const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"];
     if (keys.includes(e.code)) e.preventDefault();
   });
+}
+
+if (isMobile) {
+
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  let startPosX = 0;
+  let startPosY = 0;
+
+  scrollContainer.addEventListener("touchstart", (e) => {
+    isDragging = true;
+
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+
+    startPosX = posX;
+    startPosY = posY;
+  });
+
+  scrollContainer.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+
+    e.preventDefault();
+
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+
+    posX = startPosX - dx;
+    posY = startPosY - dy;
+
+    const maxX = 3800 - window.innerWidth;
+    const maxY = 2200 - window.innerHeight;
+
+    posX = Math.max(0, Math.min(maxX, posX));
+    posY = Math.max(0, Math.min(maxY, posY));
+
+    updateTransform();
+  }, { passive: false });
+  scrollContainer.addEventListener("touchend", () => {
+    isDragging = false;
+
+    velocityX = (startPosX - posX) * 0.1;
+    velocityY = (startPosY - posY) * 0.1;
+
+    requestAnimationFrame(inertiaScroll);
+  });
+
+  function inertiaScroll() {
+    velocityX *= 0.95;
+    velocityY *= 0.95;
+
+    posX += velocityX;
+    posY += velocityY;
+
+    const maxX = 3800 - window.innerWidth;
+    const maxY = 2200 - window.innerHeight;
+
+    posX = Math.max(0, Math.min(maxX, posX));
+    posY = Math.max(0, Math.min(maxY, posY));
+
+    updateTransform();
+
+    if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
+      requestAnimationFrame(inertiaScroll);
+    }
+  }
 }
 
 const burger = document.querySelector(".burger");
@@ -199,19 +270,19 @@ function initSwiperPage() {
 
   const isMobile = mediaQuery.matches;
 
-swiperInstance = new Swiper(".mySwiper", {
-  direction: isMobile ? "horizontal" : "vertical",
-  slidesPerView: "auto",
-  centeredSlides: true,
-  speed: 900,
-  spaceBetween: isMobile ? 20 : -40,
-  mousewheel: isMobile ? false : { sensitivity: 0.5, releaseOnEdges: true },
-  grabCursor: false,  // ← geändert
-  touchStartPreventDefault: false,
-  touchMoveStopPropagation: false,
-  simulateTouch: true,
-  touchAngle: 45
-});
+  swiperInstance = new Swiper(".mySwiper", {
+    direction: isMobile ? "horizontal" : "vertical",
+    slidesPerView: "auto",
+    centeredSlides: true,
+    speed: 900,
+    spaceBetween: isMobile ? 20 : -40,
+    mousewheel: isMobile ? false : { sensitivity: 0.5, releaseOnEdges: true },
+    grabCursor: false,  // ← geändert
+    touchStartPreventDefault: false,
+    touchMoveStopPropagation: false,
+    simulateTouch: true,
+    touchAngle: 45
+  });
 
   setupExtras();
 }

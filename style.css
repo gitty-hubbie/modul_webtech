@@ -195,7 +195,10 @@ main.content.project-page {
   gap: 140px;
 }
 
-/* linke Spalte: Tabs / Kategorien */
+.scroll-container {
+  touch-action: none;
+}
+
 .tabs {
   display: flex;
   flex-direction: column;
