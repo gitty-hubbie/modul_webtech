@@ -1,3 +1,7 @@
+if (document.body.classList.contains("projekt")) {
+  document.documentElement.style.overflowX = "hidden";
+}
+
 const images = [
   { src: "img/bild/21.jpg", col: 1, row: 1, type: "bilder", scale: 0.8, align: "bottom-right" },
   { src: "img/bild/1.jpg", col: 2, row: 1, type: "bilder" },
@@ -47,7 +51,7 @@ let velocityX = 0;
 let velocityY = 0;
 
 
-if (canvas) {
+if (canvas && scrollContainer) {
 
   function updateTransform() {
     const vw = window.innerWidth;
@@ -161,7 +165,7 @@ if (canvas) {
   });
 }
 
-if (isMobile) {
+if (isMobile && scrollContainer) {
 
   let isDragging = false;
   let startX = 0;
@@ -275,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
 let swiperInstance;
 const mediaQuery = window.matchMedia("(max-width: 899px)");
 
@@ -282,7 +287,12 @@ function initSwiperPage() {
   const swiperEl = document.querySelector(".mySwiper");
   if (!swiperEl || typeof Swiper === "undefined") return;
 
-  const isMobile = mediaQuery.matches;
+  const isMobile = window.matchMedia("(max-width: 899px)").matches;
+
+  if (swiperInstance) {
+    swiperInstance.destroy(true, true);
+    swiperInstance = null;
+  }
 
   swiperInstance = new Swiper(".mySwiper", {
     direction: isMobile ? "horizontal" : "vertical",
@@ -291,14 +301,20 @@ function initSwiperPage() {
     speed: 900,
     spaceBetween: isMobile ? 20 : -40,
     mousewheel: isMobile ? false : { sensitivity: 0.5, releaseOnEdges: true },
-    grabCursor: false,  // ← geändert
+    grabCursor: true,
+    observer: true,
+    observeParents: true,
     touchStartPreventDefault: false,
-    touchMoveStopPropagation: false,
     simulateTouch: true,
-    touchAngle: 45
+    touchEventsTarget: "container",
+    preventInteractionOnTransition: false,
   });
 
   setupExtras();
+
+  setTimeout(() => {
+    swiperInstance.update();
+  }, 100);
 }
 
 function setupExtras() {
@@ -313,15 +329,12 @@ function setupExtras() {
       const temp = main.src;
       main.src = detail.src;
       detail.src = temp;
-
       card.classList.toggle("detail-active");
     }
-
-    main.addEventListener("click", swap);
-    detail.addEventListener("click", swap);
+    main.onclick = swap;
+    detail.onclick = swap;
   });
 
-  // 🔹 URL Jump
   const params = new URLSearchParams(window.location.search);
   const imgNumber = params.get("img");
   if (imgNumber) {
@@ -338,16 +351,14 @@ function setupExtras() {
   }
 }
 
-// 🔹 MediaQuery Listener
-mediaQuery.addEventListener("change", (e) => {
-  if (!swiperInstance) return;
-  const isMobile = e.matches;
-  swiperInstance.changeDirection(isMobile ? "horizontal" : "vertical");
-  swiperInstance.params.spaceBetween = isMobile ? 20 : -40;
-  swiperInstance.params.mousewheel = isMobile ? false : { sensitivity: 0.5, releaseOnEdges: true };
-  swiperInstance.update();
-});
+mediaQuery.addEventListener("change", () => initSwiperPage());
 
 document.addEventListener("DOMContentLoaded", () => {
-  initSwiperPage();
+  setTimeout(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        initSwiperPage();
+      });
+    });
+  }, 50);
 });
