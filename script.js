@@ -42,7 +42,7 @@ const images = [
 
 const canvas = document.getElementById("canvas");
 const scrollContainer = document.getElementById("scrollContainer");
-const isMobile = window.matchMedia("(max-width: 900px)").matches;
+const isMobile = window.matchMedia("(max-width: 1025px)").matches;
 
 
 let posX = 0;
@@ -281,13 +281,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 let swiperInstance;
-const mediaQuery = window.matchMedia("(max-width: 899px)");
+const mediaQuery = window.matchMedia("(max-width: 1024px)");
 
 function initSwiperPage() {
   const swiperEl = document.querySelector(".mySwiper");
   if (!swiperEl || typeof Swiper === "undefined") return;
 
-  const isMobile = window.matchMedia("(max-width: 899px)").matches;
+  const isMobile = window.matchMedia("(max-width: 1024px)").matches;
 
   if (swiperInstance) {
     swiperInstance.destroy(true, true);

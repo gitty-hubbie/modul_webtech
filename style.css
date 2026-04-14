@@ -361,9 +361,17 @@ body.impressum .site-footer {
   margin-top: auto;
 }
 
+body.infos {
+  display: flex;
+  flex-direction: column;
+}
 
-@media (max-width: 900px),
-(max-device-width: 900px) {
+body.infos .site-footer {
+  margin-top: auto;
+}
+
+@media (max-width: 1025px),
+(max-device-width: 1025px) {
   .swiper.mySwiper {
     height: 60vh;
     min-height: 300px;
@@ -491,12 +499,19 @@ body.impressum .site-footer {
   }
 }
 
+@media (max-width: 600px),
+(max-device-width: 600px) {
+  .nav-logo {
+    height: 22px;
+  }
+}
+
 .infos-layout {
   display: block;
 }
 
 
-@media (min-width: 900px) {
+@media (min-width: 1025px) {
   .infos-layout {
     display: grid;
     grid-template-columns: 1fr 450px;
